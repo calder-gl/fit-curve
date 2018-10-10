@@ -18,7 +18,7 @@ bower install --save fit-curve
 ## Usage
 
 ```javascript
-var fitCurve = require('fit-curve');
+var { fitCurve } = require('fit-curve');
 var points = [[0, 0], [10, 10], [10, 0], [20, 0]];
 var error = 50; // The smaller the number - the much closer spline should be
 

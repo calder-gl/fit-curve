@@ -21,7 +21,7 @@
  * @param {Number} maxError - Tolerance, squared error between points and fitted curve
  * @returns {Array<Array<Array<Number>>>} Array of Bezier curves, where each element is [first-point, control-point-1, control-point-2, second-point] and points are [x, y]
  */
-function fitCurve(points, maxError, progressCallback) {
+function fitCurve(points, maxError, progressCallback, singleCurve) {
     if (!Array.isArray(points)) {
         throw new TypeError("First argument should be an array");
     }
@@ -44,7 +44,7 @@ function fitCurve(points, maxError, progressCallback) {
     const leftTangent = createTangent(points[1], points[0]);
     const rightTangent = createTangent(points[len - 2], points[len - 1]);
 
-    return fitCubic(points, leftTangent, rightTangent, maxError, progressCallback);
+    return fitCubic(points, leftTangent, rightTangent, maxError, progressCallback, singleCurve);
 }
 
 /**
@@ -57,7 +57,7 @@ function fitCurve(points, maxError, progressCallback) {
  * @param {Number} error - Tolerance, squared error between points and fitted curve
  * @returns {Array<Array<Array<Number>>>} Array of Bezier curves, where each element is [first-point, control-point-1, control-point-2, second-point] and points are [x, y]
  */
-function fitCubic(points, leftTangent, rightTangent, error, progressCallback) {
+function fitCubic(points, leftTangent, rightTangent, error, progressCallback, singleCurve) {
     const MaxIterations = 20;   //Max times to try iterating (to find an acceptable curve)
 
     var bezCurve,               //Control points of fitted Bezier curve
@@ -117,6 +117,11 @@ function fitCubic(points, leftTangent, rightTangent, error, progressCallback) {
             prevErr = maxError;
             prevSplit = splitPoint;
         }
+    }
+
+    if (singleCurve) {
+      // If we wanted exactly one curve, we did our best; just return what we've got
+      return [bezCurve];
     }
 
     //Fitting failed -- split at max error point and fit recursively
@@ -564,4 +569,4 @@ class bezier {
     }
 }
 
-module.exports = fitCurve;
+module.exports = { fitCurve };
